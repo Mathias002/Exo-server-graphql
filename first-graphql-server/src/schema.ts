@@ -14,6 +14,28 @@ export const typeDefs = gql`
     divide(number1: Float!, number2: Float!) : Float
 
     closestColor(hexa: String!): String
+
+    getFilms: [Film]
+
+    getPeoples: [People]
+
+    getFilmById(filmId: String!): String!
+
+    getPeopleById(peopleId: String!): String!
+
+  }
+
+  type Film {
+    id: String!
+    title: String!
+    people: [People]!
+  }
+
+  type People{
+    id: String!
+    name: String!
+    eyeColor: String!
+    films: [Film]!
   }
 
   type Doctor {

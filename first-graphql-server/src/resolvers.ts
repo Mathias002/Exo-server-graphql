@@ -1,50 +1,52 @@
 import { getClosestColor } from "./colors.js";
+import { Resolvers, Speciality } from "./types.js"
+
 
 const doctorsData = [
     {
       name: 'Samia Mekame',
-      speciality: 'OPHTALMOLOGIST' as const,
+      speciality: Speciality.Ophtalmologist,
     },
     {
       name: 'Catherine Bedoy',
-      speciality: 'PSYCHOLOGIST' as const,
+      speciality: Speciality.Ophtalmologist,
     },
   ];
 
-type Speciality = 'OPHTALMOLOGIST' | 'PSYCHOLOGIST'
-
-export const resolvers = {
+export const resolvers: Resolvers = {
   Query: {
     
-    doctors: (_: unknown, {specialities}: {specialities?: Speciality[]}) => specialities ? doctorsData.filter(doctor => specialities.includes(doctor.speciality)) : doctorsData,
-    
-    // doctors: (parent, args, context, info) => {
-    //   console.log(args.specialities);
-    //   //condition empty
-    //   if(!args.specialities){
-    //     throw new Error('Veuillez renseigner une spécialitées en paramètre')
-    //   } 
+    doctors: (_, {specialities}) => specialities ? doctorsData.filter(doctor => specialities.includes(doctor.speciality)) : doctorsData,
 
-    //   const filteredDoctors = doctorsData.filter(doc => args.specialities.includes(doc.speciality))
-    //   return filteredDoctors
-    // },
-
-    add: (_: unknown, {number1, number2}: {number1: number, number2: number}) => number1 + number2,
-    substract: (_: unknown, {number1, number2}: {number1: number, number2: number}) => number1 - number2,
-    multiply: (_: unknown, {number1, number2}: {number1: number, number2: number}) => number1 * number2,
-    divide: (_: unknown, {number1, number2}: {number1: number, number2: number}) => {
+    add: (_, {number1, number2}) => number1 + number2,
+    substract: (_, {number1, number2}) => number1 - number2,
+    multiply: (_, {number1, number2}) => number1 * number2,
+    divide: (_, {number1, number2}) => {
       if(number2 === 0){
         throw new Error('Impossible de diviser par 0')
       }
       return number1 / number2
     },
 
-    closestColor: (_: unknown, {hexa}: {hexa: string}) => {
+    closestColor: (_, {hexa}) => {
       if(!(hexa.match(/^#[0-9a-fA-F]{6}/))){
         throw new Error('Renseigner un hexa valide')
       }
       return getClosestColor(hexa, ["#FF5733", "#33FF57", "#3357FF"])
+    },
+    getFilms: (_, __, {dataSources}, ___) => {
+      return dataSources.trackAPI.getFilms()
+    },
+    getPeoples: (_, __, {dataSources}, ___) => {
+      return dataSources.trackAPI.getPeoples()
     }
-
   },
+  Film: {
+    people: ({people}, _, {dataSources: {trackAPI}}) => trackAPI.getPeopleByUrls(people),
+  },
+  People: {
+    eyeColor: ({eye_color}) => eye_color,
+    films: ({films}, _, {dataSources: {trackAPI}}) => trackAPI.getFilmsByUrls(films)
+  }
 }
+
