@@ -15,6 +15,8 @@ export const typeDefs = gql`
 
     closestColor(hexa: String!): String
 
+    getTracks: [Track!]!
+
     getFilms: [Film]
 
     getPeoples: [People]
@@ -38,6 +40,21 @@ export const typeDefs = gql`
     films: [Film]!
   }
 
+  type Track {
+    id: ID!
+    thumbnail: String!
+    title: String!
+    description: String!
+    author: Author
+    numberOfViews: Int
+  }
+
+  type Author {
+    id: ID!
+    name: String!
+    photo: String!
+  }
+
   type Doctor {
     name: String
     speciality: Speciality
@@ -46,5 +63,45 @@ export const typeDefs = gql`
   enum Speciality {
     PSYCHOLOGIST
     OPHTALMOLOGIST
+  }
+
+  type IncrementTrackViewReponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    track: Track
+  }
+
+  type IncrementNumberOfLikesReponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    track: Track
+  }
+
+  type Mutation {
+    incrementTrackView(id: ID!): IncrementTrackViewReponse!
+    incrementNumberOfLikes(id: ID!): IncrementNumberOfLikesReponse!
+    createUser(username: String!, password: String!): CreateUserResponse
+    signIn(username: String!, password: String!): SignInResponse
+  }
+ 
+  type CreateUserResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    user: User
+  }
+
+  type SignInResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    token: String!
+  }
+ 
+  type User {
+    id: ID!
+    username: String!
   }
 `;
